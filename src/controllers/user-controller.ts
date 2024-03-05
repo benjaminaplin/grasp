@@ -17,11 +17,24 @@ export const userList = (prisma: any) => asyncHandler( async (req: any, res: any
 export const getUser = (prisma: any) => asyncHandler( async (req: any, res: any) => {
   let user
   try {
-    user = await prisma.user.findUnique(JSON.parse(req.params.id))
+    user = await prisma.user.findUnique({where: {id: JSON.parse(req.params.id)}})
   } catch (error) {
     user = error
   }
   res.send(user)
+});
+
+export const getUserContacts = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
+  let contacts
+  try {
+    contacts = await prisma.contact.findMany({
+      where: {
+        userId: JSON.parse(req.params.id)
+      }})
+  } catch (error) {
+    contacts = error
+  }
+  res.send(contacts)
 });
 
 // Display detail page for a specific Author.

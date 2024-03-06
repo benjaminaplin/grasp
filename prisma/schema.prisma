@@ -20,6 +20,7 @@ model User {
   lastName   String
   email String  @unique
   contacts Contact[]
+  jobApplications JobApplication[]
 }
 
 model Contact {
@@ -30,5 +31,14 @@ model Contact {
   userId    Int
   firstName  String
   lastName   String
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model JobApplication {
+  id        Int     @id @default(autoincrement())
+  type      String
+  role      String
+  notes     String
+  userId    Int
   user      User    @relation(fields: [userId], references: [id])
 }

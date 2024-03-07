@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "simple crm",
   "main": "dist/index.js",
+  "engines": {
+    "node": "20.11.1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/benjaminaplin/grasp.git"

@@ -6,7 +6,27 @@ import express from 'express'
 import { DefaultArgs } from '@prisma/client/runtime/library';
 export type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
 
-const prismaClient = new PrismaClient()
+const prismaClient = new PrismaClient({
+  log: [
+    {
+      emit: 'stdout',
+      level: 'query',
+    },
+    {
+      emit: 'stdout',
+      level: 'error',
+    },
+    {
+      emit: 'stdout',
+      level: 'info',
+    },
+    {
+      emit: 'stdout',
+      level: 'warn',
+    },
+  ],
+})
+
 const app = express()
 
 app.use(express.json())

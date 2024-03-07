@@ -41,7 +41,8 @@ export const updateContact = (prisma: PrismaClientType) => asyncHandler( async (
 })
 
 export const createContact = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
-  const { firstName, lastName, userId, title, type, notes } = JSON.parse(req.body)
+console.log('************req.body*******', req.body)
+const { firstName, lastName, userId, title, type, notes } =req.body
   console.log({ firstName, lastName, userId, title, type, notes })
   let result
   try {

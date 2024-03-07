@@ -30,7 +30,7 @@ const prismaClient = new PrismaClient({
 const app = express()
 
 app.use(express.json())
-const port = 3001
+const port = 80
 
 app.use('/users', createUserRouter(prismaClient))
 app.use('/contacts', createContactRouter(prismaClient))

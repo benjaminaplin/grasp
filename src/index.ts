@@ -3,6 +3,8 @@ import createUserRouter from './routers/user-router'
 import createContactRouter from './routers/contact-router'
 import createJobApplicationRouter from './routers/job-application-router'
 import express from 'express'
+import cors from 'cors'
+
 import { DefaultArgs } from '@prisma/client/runtime/library';
 export type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
 
@@ -28,6 +30,7 @@ const prismaClient = new PrismaClient({
 })
 
 const app = express()
+app.use(cors())
 
 app.use(express.json())
 const port = 80

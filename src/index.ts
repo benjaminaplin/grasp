@@ -2,6 +2,7 @@ import { Prisma, PrismaClient } from '@prisma/client'
 import createUserRouter from './routers/user-router'
 import createContactRouter from './routers/contact-router'
 import createJobApplicationRouter from './routers/job-application-router'
+import createCompanyRouter from './routers/company-router'
 import express from 'express'
 import cors from 'cors'
 
@@ -37,6 +38,7 @@ const port = 80
 
 app.use('/users', createUserRouter(prismaClient))
 app.use('/contacts', createContactRouter(prismaClient))
+app.use('/companies', createCompanyRouter(prismaClient))
 app.use('/job-applications', createJobApplicationRouter(prismaClient))
 
 app.listen(port, () => {

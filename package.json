@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "simple crm",
   "main": "dist/index.js",
-  "engines": {
-    "node": "v16.20.2",
-    "npm": "8.19.4"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/benjaminaplin/grasp.git"
@@ -25,6 +21,7 @@
     "cors": "^2.8.5",
     "express": "^4.18.3",
     "express-async-handler": "^1.2.0",
+    "nodemon": "^3.1.0",
     "prisma": "^5.10.2",
     "ramda": "^0.29.1"
   },
@@ -37,7 +34,7 @@
   "scripts": {
     "build": "tsc",
     "prestart": "npm run build",
-    "start": "node .",
+    "start": "nodemon node .",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

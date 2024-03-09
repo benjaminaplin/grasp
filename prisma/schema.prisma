@@ -21,6 +21,7 @@ model User {
   email String  @unique
   contacts Contact[]
   jobApplications JobApplication[]
+  companies Company[]
 }
 
 model Contact {
@@ -34,6 +35,15 @@ model Contact {
   user      User    @relation(fields: [userId], references: [id])
 }
 
+model Company {
+  id                Int     @id @default(autoincrement())
+  name              String
+  notes             String
+  jobApplications   JobApplication[]
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
 model JobApplication {
   id        Int     @id @default(autoincrement())
   type      String
@@ -41,4 +51,6 @@ model JobApplication {
   notes     String
   userId    Int
   user      User    @relation(fields: [userId], references: [id])
+  companyId Int?     @unique
+  company   Company? @relation(fields: [companyId], references: [id])
 }

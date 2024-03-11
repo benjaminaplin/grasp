@@ -17,7 +17,7 @@ export const jobApplicationList = (prisma: PrismaClientType) => asyncHandler( as
 export const getJobApplication = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let jobApplication
   try {
-    jobApplication = await prisma.jobApplication.findUnique(JSON.parse(req.params.id))
+    jobApplication = await prisma.jobApplication.findUnique({where: {id: JSON.parse(req.params.id)}})
   } catch (error) {
     jobApplication = error
   }

@@ -7,6 +7,7 @@ import express from 'express'
 import cors from 'cors'
 
 import { DefaultArgs } from '@prisma/client/runtime/library';
+import createNextStepRouter from './routers/next-step-router'
 export type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
 
 const prismaClient = new PrismaClient({
@@ -40,6 +41,7 @@ app.use('/users', createUserRouter(prismaClient))
 app.use('/contacts', createContactRouter(prismaClient))
 app.use('/companies', createCompanyRouter(prismaClient))
 app.use('/job-applications', createJobApplicationRouter(prismaClient))
+app.use('/next-steps', createNextStepRouter(prismaClient))
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

@@ -17,7 +17,7 @@ export const contactList = (prisma: PrismaClientType) => asyncHandler( async (re
 export const getContact = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let contact
   try {
-    contact = await prisma.contact.findUnique(JSON.parse(req.params.id))
+    contact = await prisma.contact.findUnique({where: {id: JSON.parse(req.params.id)}})
   } catch (error) {
     contact = error
   }

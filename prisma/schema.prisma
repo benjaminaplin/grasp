@@ -22,6 +22,7 @@ model User {
   contacts Contact[]
   jobApplications JobApplication[]
   companies Company[]
+  nextSteps NextStep[]
 }
 
 model Contact {
@@ -33,6 +34,7 @@ model Contact {
   firstName  String
   lastName   String
   user      User    @relation(fields: [userId], references: [id])
+  nextSteps NextStep[]
 }
 
 model Company {
@@ -53,4 +55,15 @@ model JobApplication {
   user      User    @relation(fields: [userId], references: [id])
   companyId Int?     
   company   Company? @relation(fields: [companyId], references: [id])
+}
+
+model NextStep {
+  id          Int     @id @default(autoincrement())
+  action      String
+  notes       String?
+  type        String?
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      Int?
+  contact     Contact?   @relation(fields: [contactId], references: [id])
+  contactId   Int?  
 }

@@ -17,7 +17,7 @@ export const companyList = (prisma: PrismaClientType) => asyncHandler( async (re
 export const getCompany = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let company
   try {
-    company = await prisma.company.findUnique(JSON.parse(req.params.id))
+    company = await prisma.company.findUnique({where: {id: JSON.parse(req.params.id)}})
   } catch (error) {
     company = error
   }

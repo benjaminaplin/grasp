@@ -41,13 +41,11 @@ export const updateCompany = (prisma: PrismaClientType) => asyncHandler( async (
 })
 
 export const createCompany = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
-const { firstName, lastName, userId, title, type, notes } =req.body
-  console.log({ firstName, lastName, userId, title, type, notes })
+const { name, userId, notes } =req.body
   let result
   try {
     result = await prisma.company.create({
       data: {
-        // @ts-ignore
         name, userId: JSON.parse(userId), notes
       },
     })

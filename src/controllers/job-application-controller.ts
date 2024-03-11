@@ -41,13 +41,13 @@ export const updateJobApplication = (prisma: PrismaClientType) => asyncHandler( 
 })
 
 export const createJobApplication = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
-  const { userId, role, type, notes } = req.body
+  const { userId, role, type, notes, companyId } = req.body
 
   let result
   try {
     result = await prisma.jobApplication.create({
       data: {
-         userId: JSON.parse(userId), type, role, notes
+         userId: JSON.parse(userId), type, role, notes, companyId
       },
     })
   } catch (error) {

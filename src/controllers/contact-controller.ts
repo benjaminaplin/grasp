@@ -7,7 +7,13 @@ type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultA
 export const contactList = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let contacts
   try {
-     contacts = await prisma.contact.findMany()
+     contacts = await prisma.contact.findMany(
+      {
+        include: {
+          nextSteps: true, 
+        },
+      }
+     )
   } catch (error) {
     contacts = error
   }
@@ -17,7 +23,9 @@ export const contactList = (prisma: PrismaClientType) => asyncHandler( async (re
 export const getContact = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let contact
   try {
-    contact = await prisma.contact.findUnique({where: {id: JSON.parse(req.params.id)}})
+    contact = await prisma.contact.findUnique({where: {id: JSON.parse(req.params.id)}, include: {
+      nextSteps: true
+    }})
   } catch (error) {
     contact = error
   }
@@ -42,7 +50,6 @@ export const updateContact = (prisma: PrismaClientType) => asyncHandler( async (
 
 export const createContact = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
 const {closeness, firstName, lastName, userId, title, type, notes } = req.body
-  console.log({ closeness, firstName, lastName, userId, title, type, notes })
   let result
   try { 
     result = await prisma.contact.create({

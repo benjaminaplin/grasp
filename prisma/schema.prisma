@@ -28,6 +28,7 @@ model User {
 model Contact {
   id        Int     @id @default(autoincrement())
   title     String
+  closeness String @default("D")
   type      String
   notes     String
   userId    Int

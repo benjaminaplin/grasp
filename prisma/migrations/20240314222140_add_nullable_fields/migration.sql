@@ -1,0 +1,16 @@
+-- AlterTable
+ALTER TABLE "Company" ALTER COLUMN "notes" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "Contact" ALTER COLUMN "title" DROP NOT NULL,
+ALTER COLUMN "type" DROP NOT NULL,
+ALTER COLUMN "notes" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "JobApplication" ADD COLUMN     "link" TEXT,
+ALTER COLUMN "type" DROP NOT NULL,
+ALTER COLUMN "role" DROP NOT NULL,
+ALTER COLUMN "notes" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "email" DROP NOT NULL;

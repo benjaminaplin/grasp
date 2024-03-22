@@ -42,12 +42,11 @@ app.use(cors())
 app.use(express.json())
 const port = 5000 
 
-const apiPrefix = '/api'
-app.use(`${apiPrefix}/users`, createUserRouter(prismaClient))
-app.use(`${apiPrefix}/contacts`, createContactRouter(prismaClient))
-app.use(`${apiPrefix}/companies`, createCompanyRouter(prismaClient))
-app.use(`${apiPrefix}/job-applications`, createJobApplicationRouter(prismaClient))
-app.use(`${apiPrefix}/next-steps`, createNextStepRouter(prismaClient))
+app.use('/api/users', createUserRouter(prismaClient))
+app.use('/api/contacts', createContactRouter(prismaClient))
+app.use('/api/companies', createCompanyRouter(prismaClient))
+app.use('/api/job-applications', createJobApplicationRouter(prismaClient))
+app.use('/api/next-steps', createNextStepRouter(prismaClient))
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

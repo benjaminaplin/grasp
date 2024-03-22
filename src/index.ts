@@ -31,16 +31,22 @@ const prismaClient = new PrismaClient({
   ],
 })
 
+const corsOptions = {
+  origin: 'https://grasp.benjaminaplin.com',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
 const app = express()
 app.use(cors())
 
 app.use(express.json())
 const port = 3000;
-app.use('/users', createUserRouter(prismaClient))
-app.use('/contacts', createContactRouter(prismaClient))
-app.use('/companies', createCompanyRouter(prismaClient))
-app.use('/job-applications', createJobApplicationRouter(prismaClient))
-app.use('/next-steps', createNextStepRouter(prismaClient))
+
+app.use('/api/users', createUserRouter(prismaClient))
+app.use('/api/contacts', createContactRouter(prismaClient))
+app.use('/api/companies', createCompanyRouter(prismaClient))
+app.use('/api/job-applications', createJobApplicationRouter(prismaClient))
+app.use('/api/next-steps', createNextStepRouter(prismaClient))
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

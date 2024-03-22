@@ -35,8 +35,7 @@ const app = express()
 app.use(cors())
 
 app.use(express.json())
-const port = 5000 
-
+const port = 3000;
 app.use('/users', createUserRouter(prismaClient))
 app.use('/contacts', createContactRouter(prismaClient))
 app.use('/companies', createCompanyRouter(prismaClient))

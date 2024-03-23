@@ -27,7 +27,6 @@ export const getCompany = (prisma: PrismaClientType) => asyncHandler( async (req
 // Display detail page for a specific Author.
 export const updateCompany = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let updateCompany
-  console.log('*******************', req.params, '*********************')
   try {
      updateCompany = await prisma.company.update({
         where: {

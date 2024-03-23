@@ -1,5 +1,5 @@
 import express from 'express'
-import { userList, updateUser, signUpUser, deleteUser, getUser, getUserContacts } from '../controllers/user-controller'
+import { userList, updateUser, signUpUser, deleteUser, getUser, getUserContacts , getUserCompanies} from '../controllers/user-controller'
 import { PrismaClientType } from '../index';
 
 const router = express.Router();
@@ -14,6 +14,8 @@ const createUserRouter = (prismaClient: PrismaClientType) => {
   
   router.delete('/:id', deleteUser(prismaClient))
   router.get('/:id/contacts', getUserContacts(prismaClient))
+  router.get('/:id/companies', getUserCompanies(prismaClient))
+
   return router 
 }
 

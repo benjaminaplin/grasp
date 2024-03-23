@@ -14,64 +14,63 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  userName  String
-  firstName  String
-  lastName   String
-  email String?  @unique
-  contacts Contact[]
+  id              Int              @id @default(autoincrement())
+  userName        String
+  firstName       String
+  lastName        String
+  email           String?          @unique
+  contacts        Contact[]
   jobApplications JobApplication[]
-  companies Company[]
-  nextSteps NextStep[]
+  nextSteps       NextStep[]
+  companies       Company[]
 }
 
 model Contact {
-  id        Int     @id @default(autoincrement())
-  title     String?
-  closeness String @default("D")
-  type      String?
-  notes     String?
-  userId    Int
-  firstName  String
-  lastName   String
-  user      User    @relation(fields: [userId], references: [id])
-  nextSteps NextStep[]
-  jobApplicationsId Int?     
+  id                Int             @id @default(autoincrement())
+  title             String?
+  closeness         String          @default("D")
+  type              String?
+  notes             String?
+  userId            Int
+  firstName         String
+  lastName          String
+  user              User            @relation(fields: [userId], references: [id])
+  nextSteps         NextStep[]
+  jobApplicationsId Int?
   jobApplications   JobApplication? @relation(fields: [jobApplicationsId], references: [id])
 }
 
 model Company {
-  id                Int     @id @default(autoincrement())
-  name              String
-  notes             String?
-  jobApplications   JobApplication[]
-  user      User    @relation(fields: [userId], references: [id])
-  userId    Int
+  id              Int              @id @default(autoincrement())
+  name            String
+  notes           String?
+  jobApplications JobApplication[]
+  users           User[]
 }
 
 model JobApplication {
-  id        Int     @id @default(autoincrement())
-  type      String?
-  role      String?
-  notes     String?
-  status    String?
-  userId    Int
-  user      User    @relation(fields: [userId], references: [id])
-  companyId Int?     
-  company   Company? @relation(fields: [companyId], references: [id])
-  link      String?
-  contacts  Contact[]
+  id          Int       @id @default(autoincrement())
+  type        String?
+  role        String?
+  notes       String?
+  status      String?
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  companyId   Int?
+  company     Company?  @relation(fields: [companyId], references: [id])
+  link        String?
+  contacts    Contact[]
   dateApplied DateTime  @default(now())
 }
 
 model NextStep {
-  id          Int     @id @default(autoincrement())
-  action      String
-  notes       String?
-  type        String?
-  user        User?    @relation(fields: [userId], references: [id])
-  userId      Int?
-  contact     Contact?   @relation(fields: [contactId], references: [id])
-  contactId   Int?
-  completed   Boolean @default(false)
+  id        Int      @id @default(autoincrement())
+  action    String
+  notes     String?
+  type      String?
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+  contact   Contact? @relation(fields: [contactId], references: [id])
+  contactId Int?
+  completed Boolean  @default(false)
 }

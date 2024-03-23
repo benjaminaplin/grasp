@@ -1,17 +1,17 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, User } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import asyncHandler from "express-async-handler"
 
 type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
 // Display list of all Companys.
 export const companyList = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
-  let contacts
+  let companies
   try {
-     contacts = await prisma.company.findMany()
+     companies = await prisma.company.findMany()
   } catch (error) {
-    contacts = error
+    companies = error
   }
-  res.send(contacts)
+  res.send(companies)
 });
 
 export const getCompany = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
@@ -27,12 +27,31 @@ export const getCompany = (prisma: PrismaClientType) => asyncHandler( async (req
 // Display detail page for a specific Author.
 export const updateCompany = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let updateCompany
+  console.log('*******************', req.params, '*********************')
   try {
      updateCompany = await prisma.company.update({
-      where: {
-        id: JSON.parse(req.params.id),
-      },
-      data: req.body,
+        where: {
+          id: JSON.parse(req.params.id),
+        },
+        data: {
+          ...req.body,
+          users: {
+            connectOrCreate: {
+              where: {
+                id: 2,
+              },
+              create: {
+                email: 'benjaminaplin@gmail.com',
+                firstName: 'Benjamin',
+                lastName: 'Aplin',
+                userName: 'benjaminaplin'
+              },
+            }
+          }
+        },
+        include: {
+          users: true
+        }
     })
   } catch (error) {
     updateCompany = error
@@ -41,12 +60,17 @@ export const updateCompany = (prisma: PrismaClientType) => asyncHandler( async (
 })
 
 export const createCompany = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
-const { name, userId, notes } =req.body
+const { name, users, notes } = req.body
   let result
   try {
     result = await prisma.company.create({
       data: {
-        name, userId: JSON.parse(userId), notes
+        name,
+        users: {
+          create: users.map((user: User) => 
+            ({userName: user.userName, firstName: user.firstName, lastName: user.lastName, email: user.email }))
+        },
+        notes
       },
     })
   } catch (error) {
@@ -58,7 +82,7 @@ const { name, userId, notes } =req.body
 
 export const deleteCompany = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
   let result
-  try {
+  try { 
     result = await prisma.company.delete({
       where: {
         id: JSON.parse(req.params.id)

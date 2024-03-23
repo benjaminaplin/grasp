@@ -37,6 +37,24 @@ export const getUserContacts = (prisma: PrismaClientType) => asyncHandler( async
   res.send(contacts)
 });
 
+export const getUserCompanies = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
+  let companies
+  try {
+    companies = await prisma.company.findMany({
+      where: {
+        users: {
+          some: {
+            id: JSON.parse(req.params.id)
+          }
+        } 
+      }
+    })
+  } catch (error) {
+    companies = error
+  }
+  res.send(companies)
+});
+
 // Display detail page for a specific Author.
 export const updateUser = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let updateUser

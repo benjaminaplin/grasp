@@ -54,6 +54,7 @@ model JobApplication {
   type      String?
   role      String?
   notes     String?
+  status    String?
   userId    Int
   user      User    @relation(fields: [userId], references: [id])
   companyId Int?     

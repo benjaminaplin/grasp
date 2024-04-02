@@ -14,7 +14,7 @@ export const interviewList = (prisma: PrismaClientType) => asyncHandler( async (
         contact: true
       }
      })
-     console.log('********', interviews, '*************8')
+ 
   } catch (error) {
     interviews = error
   }
@@ -48,7 +48,7 @@ export const updateInterview = (prisma: PrismaClientType) => asyncHandler( async
 })
 
 export const createInterview = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
-const { round, type, status: interviewStatus, userId, notes, contactId, jobApplicationId} = req.body
+const { round, type, status: interviewStatus, userId, notes, contactId, jobApplicationId, date} = req.body
   let result
   try {
     result = await prisma.interview.create({
@@ -60,6 +60,7 @@ const { round, type, status: interviewStatus, userId, notes, contactId, jobAppli
         jobApplicationId: JSON.parse(jobApplicationId),
         userId: JSON.parse(userId),
         contactId: JSON.parse(contactId),
+        date: new Date(date).toISOString()
       },
     })
   } catch (error) {

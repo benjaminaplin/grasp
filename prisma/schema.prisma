@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,52 +9,58 @@ datasource db {
 
 model User {
   id              Int              @id @default(autoincrement())
-  userName        String
+  email           String?          @unique
   firstName       String
   lastName        String
-  email           String?          @unique
+  userName        String
   contacts        Contact[]
   jobApplications JobApplication[]
   nextSteps       NextStep[]
-  companies       Company[]
+  companies       Company[]        @relation("CompanyToUser")
+  Interview       Interview[]
 }
 
 model Contact {
   id                Int             @id @default(autoincrement())
   title             String?
-  closeness         String          @default("D")
   type              String?
   notes             String?
   userId            Int
   firstName         String
   lastName          String
-  user              User            @relation(fields: [userId], references: [id])
-  nextSteps         NextStep[]
+  closeness         String          @default("D")
   jobApplicationsId Int?
   jobApplications   JobApplication? @relation(fields: [jobApplicationsId], references: [id])
+  user              User            @relation(fields: [userId], references: [id])
+  nextSteps         NextStep[]
+  Interview         Interview[]
 }
 
 model Company {
   id              Int              @id @default(autoincrement())
   name            String
   notes           String?
+  userid          Int?
   jobApplications JobApplication[]
-  users           User[]
+  users           User[]           @relation("CompanyToUser")
 }
 
 model JobApplication {
-  id          Int       @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   type        String?
   role        String?
   notes       String?
-  status      String?
   userId      Int
-  user        User      @relation(fields: [userId], references: [id])
   companyId   Int?
-  company     Company?  @relation(fields: [companyId], references: [id])
   link        String?
+  dateApplied DateTime    @default(now())
+  status      String?
+  description String?
+  nextsteps   String?
   contacts    Contact[]
-  dateApplied DateTime  @default(now())
+  company     Company?    @relation(fields: [companyId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+  Interview   Interview[]
 }
 
 model NextStep {
@@ -68,9 +68,23 @@ model NextStep {
   action    String
   notes     String?
   type      String?
-  user      User?    @relation(fields: [userId], references: [id])
   userId    Int?
-  contact   Contact? @relation(fields: [contactId], references: [id])
   contactId Int?
   completed Boolean  @default(false)
+  contact   Contact? @relation(fields: [contactId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model Interview {
+  id               Int             @id @default(autoincrement())
+  round            Int
+  notes            String?
+  type             String?
+  userId           Int?
+  status           String?
+  contactId        Int?
+  jobApplicationId Int?
+  contact          Contact?        @relation(fields: [contactId], references: [id])
+  jobApplication   JobApplication? @relation(fields: [jobApplicationId], references: [id])
+  user             User?           @relation(fields: [userId], references: [id])
 }

@@ -1,3 +1,4 @@
+
 import { Prisma, PrismaClient } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import asyncHandler from "express-async-handler"
@@ -27,12 +28,13 @@ export const getNextStep = (prisma: PrismaClientType) => asyncHandler( async (re
 // Display detail page for a specific Author.
 export const updateNextStep = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let updatenextStep
+  console.log('updatenextStep', updatenextStep)
   try {
      updatenextStep = await prisma.nextStep.update({
       where: {
         id: JSON.parse(req.params.id),
       },
-      data: req.body,
+      data: {...req.body, completed: !!req.body.completed},
     })
   } catch (error) {
     updatenextStep = error

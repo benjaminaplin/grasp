@@ -9,6 +9,7 @@ import bodyParser from 'body-parser'
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import createNextStepRouter from './routers/next-step-router'
 import createInterviewRouter from './routers/interview-router'
+import createTouchRouter from './routers/touch-router'
 export type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
 
 const prismaClient = new PrismaClient({
@@ -50,6 +51,7 @@ app.use('/api/companies', createCompanyRouter(prismaClient))
 app.use('/api/job-applications', createJobApplicationRouter(prismaClient))
 app.use('/api/next-steps', createNextStepRouter(prismaClient))
 app.use('/api/interviews', createInterviewRouter(prismaClient))
+app.use('/api/touches', createTouchRouter(prismaClient))
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

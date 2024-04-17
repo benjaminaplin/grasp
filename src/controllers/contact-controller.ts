@@ -10,7 +10,9 @@ export const contactList = (prisma: PrismaClientType) => asyncHandler( async (re
      contacts = await prisma.contact.findMany(
       {
         include: {
-          nextSteps: true, 
+          nextSteps: true,
+          company: true,
+          jobApplications: true,
         },
       }
      )
@@ -40,7 +42,7 @@ export const updateContact = (prisma: PrismaClientType) => asyncHandler( async (
       where: {
         id: JSON.parse(req.params.id),
       },
-      data: req.body,
+      data: {...req.body, companyId: JSON.parse(req.body.companyId)},
     })
   } catch (error) {
     updateContact = error

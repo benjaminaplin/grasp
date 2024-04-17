@@ -18,6 +18,7 @@ model User {
   nextSteps       NextStep[]
   companies       Company[]        @relation("CompanyToUser")
   Interview       Interview[]
+  Touch           Touch[]
 }
 
 model Contact {
@@ -34,6 +35,9 @@ model Contact {
   user              User            @relation(fields: [userId], references: [id])
   nextSteps         NextStep[]
   Interview         Interview[]
+  Touch             Touch[]
+  companyId         Int?
+  company           Company?        @relation(fields: [companyId], references: [id])
 }
 
 model Company {
@@ -43,6 +47,7 @@ model Company {
   userid          Int?
   jobApplications JobApplication[]
   users           User[]           @relation("CompanyToUser")
+  Contact         Contact[]
 }
 
 model JobApplication {
@@ -51,16 +56,17 @@ model JobApplication {
   role        String?
   notes       String?
   userId      Int
-  companyId   Int?
   link        String?
   dateApplied DateTime    @default(now())
   status      String?
   description String?
   nextsteps   String?
   contacts    Contact[]
+  companyId   Int?
   company     Company?    @relation(fields: [companyId], references: [id])
   user        User        @relation(fields: [userId], references: [id])
   Interview   Interview[]
+  Touch       Touch[]
 }
 
 model NextStep {
@@ -87,5 +93,20 @@ model Interview {
   contact          Contact?        @relation(fields: [contactId], references: [id])
   jobApplication   JobApplication? @relation(fields: [jobApplicationId], references: [id])
   user             User?           @relation(fields: [userId], references: [id])
-  date             DateTime    @default(now())
+  date             DateTime        @default(now())
+}
+
+model Touch {
+  id               Int             @id @default(autoincrement())
+  notes            String?
+  type             String?
+  contactId        Int?
+  contact          Contact?        @relation(fields: [contactId], references: [id])
+  jobApplicationId Int?
+  jobApplication   JobApplication? @relation(fields: [jobApplicationId], references: [id])
+  userId           Int?
+  user             User?           @relation(fields: [userId], references: [id])
+  isNextStep       Boolean?
+  isCompleted      Boolean?
+  scheduledDate    DateTime?
 }

@@ -69,15 +69,26 @@ export const updateCompany = (prisma: PrismaClientType) => asyncHandler( async (
 })
 
 export const createCompany = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
-const { name, users, notes } = req.body
+  const { name, users, notes, userId } = req.body
   let result
+  let user
+  try {
+    user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    })
+    console.log('user', user)
+  } catch (error) {
+    user = error
+    res.json(user)
+  }
   try {
     result = await prisma.company.create({
       data: {
         name,
         users: {
-          create: users.map((user: User) => 
-            ({userName: user.userName, firstName: user.firstName, lastName: user.lastName, email: user.email }))
+          connect: [{id: userId}]
         },
         notes
       },

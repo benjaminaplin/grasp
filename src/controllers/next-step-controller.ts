@@ -1,7 +1,8 @@
 
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, Touch } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import asyncHandler from "express-async-handler"
+import omit from "lodash/omit"
 
 type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
 // Display list of all nextSteps.
@@ -25,25 +26,39 @@ export const getNextStep = (prisma: PrismaClientType) => asyncHandler( async (re
   res.send(nextStep)
 });
 
-// Display detail page for a specific Author.
-export const updateNextStep = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
-  let updatenextStep
-  console.log('updatenextStep', updatenextStep)
+export const updateNextStep = (prisma: PrismaClientType) => asyncHandler(async (req: any, res: any) => {
+  const { action, userId, type, notes, contactId , completed} = req.body
+  let newNextStep
+
+  const nextStep = await prisma.nextStep.findUnique({where: {id: JSON.parse(req.params.id)}})
+  if(!nextStep.completed && (completed === true)){
+    let newTouch: Partial<Touch> = {
+      notes: action,
+      type,
+      jobApplicationId: null,
+      userId: JSON.parse(userId),
+      contactId: contactId ? JSON.parse(contactId) : null,
+      scheduledDate:  new Date().toISOString() as unknown as Date
+    }
+    await prisma.touch.create({
+      data: newTouch,
+    })
+  }
   try {
-     updatenextStep = await prisma.nextStep.update({
+     newNextStep = await prisma.nextStep.update({
       where: {
         id: JSON.parse(req.params.id),
       },
-      data: {...req.body, completed: !!req.body.completed},
+      data: {...omit(req.body, ['id', 'userId', 'contactId', 'contact']), completed: req.body.completed, notes},
     })
   } catch (error) {
-    updatenextStep = error
+    newNextStep = error
   }
- res.send(updatenextStep)
+ res.send(newNextStep)
 })
 
 export const createNextStep = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
-const { action, userId, type, notes, contactId } =req.body
+const { action, userId, type, notes, contactId } = req.body
   console.log({ action, userId, type, notes, contactId })
   let result
   try {

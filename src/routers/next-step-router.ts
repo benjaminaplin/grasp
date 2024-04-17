@@ -8,7 +8,7 @@ const createNextStepRouter = (prismaClient: PrismaClientType) => {
 
   router.get('/:id', getNextStep(prismaClient))
   
-  router.patch('/:id', updateNextStep(prismaClient))
+  router.put('/:id', updateNextStep(prismaClient))
   
   router.post(`/`, createNextStep(prismaClient) )
   

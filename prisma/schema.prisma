@@ -34,10 +34,10 @@ model Contact {
   jobApplications   JobApplication? @relation(fields: [jobApplicationsId], references: [id])
   user              User            @relation(fields: [userId], references: [id])
   nextSteps         NextStep[]
-  Interview         Interview[]
-  Touch             Touch[]
+  interview         Interview[]
+  touches           Touch[]
   companyId         Int?
-  company           Company?        @relation(fields: [companyId], references: [id])
+  companies          Company?        @relation(fields: [companyId], references: [id])
 }
 
 model Company {

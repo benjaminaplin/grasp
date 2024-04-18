@@ -11,8 +11,9 @@ export const contactList = (prisma: PrismaClientType) => asyncHandler( async (re
       {
         include: {
           nextSteps: true,
-          company: true,
+          companies: true,
           jobApplications: true,
+          touches: true,
         },
       }
      )

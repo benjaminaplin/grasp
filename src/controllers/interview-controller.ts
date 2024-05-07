@@ -9,6 +9,7 @@ export const interviewList = (prisma: PrismaClientType) => asyncHandler( async (
   let interviews
   try {
      interviews = await prisma.interview.findMany({
+      where: {userId: 3},
       include: {
         jobApplication: true,
         contact: true

@@ -9,7 +9,7 @@ type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultA
 export const nextStepList = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let nextSteps
   try {
-     nextSteps = await prisma.nextStep.findMany()
+     nextSteps = await prisma.nextStep.findMany({where: {userId: 3}})
   } catch (error) {
     nextSteps = error
   }

@@ -7,7 +7,7 @@ type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultA
 export const companyList = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let companies
   try {
-     companies = await prisma.company.findMany()
+     companies = await prisma.company.findMany({ where: { userid: 3 }})
   } catch (error) {
     companies = error
   }

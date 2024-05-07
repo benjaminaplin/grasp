@@ -27,16 +27,6 @@ export const getCompany = (prisma: PrismaClientType) => asyncHandler( async (req
 // Display detail page for a specific Author.
 export const updateCompany = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let updateCompany
-/* 
-{
-      "id": 2,
-      "email": "benjaminaplin@gmail.com",
-      "firstName": "Benjamin",
-      "lastName": "Aplin",
-      "userName": "benjaminaplin"
-    }
-*/
-
   try {
      updateCompany = await prisma.company.update({
         where: {
@@ -47,13 +37,13 @@ export const updateCompany = (prisma: PrismaClientType) => asyncHandler( async (
           users: {
             connectOrCreate: {
               where: {
-                id: 2,
+                id: 3,
               },
               create: {
-                email: 'benjaminaplin@gmail.com',
-                firstName: 'Benjamin',
-                lastName: 'Aplin',
-                userName: 'benjaminaplin'
+                email: 'joejobseeker@gmail.com',
+                firstName: 'Joe',
+                lastName: 'Jobseeker',
+                userName: 'joejobseeker'
               },
             }
           }

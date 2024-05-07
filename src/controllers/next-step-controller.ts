@@ -27,7 +27,7 @@ export const getNextStep = (prisma: PrismaClientType) => asyncHandler( async (re
 });
 
 export const updateNextStep = (prisma: PrismaClientType) => asyncHandler(async (req: any, res: any) => {
-  const { action, userId, type, notes, contactId , completed} = req.body
+  const { action, userId, type, notes, contactId , completed, dueDate } = req.body
   let newNextStep
 
   const nextStep = await prisma.nextStep.findUnique({where: {id: JSON.parse(req.params.id)}})
@@ -35,7 +35,7 @@ export const updateNextStep = (prisma: PrismaClientType) => asyncHandler(async (
     let newTouch: Partial<Touch> = {
       notes: action,
       type,
-      jobApplicationId: null,
+      jobApplicationId: null, 
       userId: JSON.parse(userId),
       contactId: contactId ? JSON.parse(contactId) : null,
       scheduledDate:  new Date().toISOString() as unknown as Date
@@ -49,7 +49,12 @@ export const updateNextStep = (prisma: PrismaClientType) => asyncHandler(async (
       where: {
         id: JSON.parse(req.params.id),
       },
-      data: {...omit(req.body, ['id', 'userId', 'contactId', 'contact']), completed: req.body.completed, notes},
+      data: {
+        ...omit(req.body, ['id', 'userId', 'contactId', 'contact']),
+        completed: req.body.completed,
+        notes,
+        dueDate:  new Date(dueDate).toISOString()
+      },
     })
   } catch (error) {
     newNextStep = error
@@ -58,13 +63,17 @@ export const updateNextStep = (prisma: PrismaClientType) => asyncHandler(async (
 })
 
 export const createNextStep = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
-const { action, userId, type, notes, contactId } = req.body
-  console.log({ action, userId, type, notes, contactId })
+const { action, userId, type, notes, contactId, dueDate } = req.body
+  console.log({ action, userId, type, notes, contactId, dueDate })
   let result
   try {
     result = await prisma.nextStep.create({
       data: {
-       userId: JSON.parse(userId), contactId: JSON.parse(contactId), action, type, notes
+       userId: JSON.parse(userId), contactId: JSON.parse(contactId),
+       action,
+       type,
+       notes, 
+       dueDate:  new Date(dueDate).toISOString()
       },
     })
   } catch (error) {
@@ -84,7 +93,7 @@ export const deleteNextStep = (prisma: PrismaClientType) => asyncHandler( async 
       },
     })
   } catch (error) {
-    console.log('eror', error)
+    console.log('error', error)
     result = error
   }
   res.json(result)

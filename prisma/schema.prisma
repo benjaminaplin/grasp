@@ -37,7 +37,7 @@ model Contact {
   interview         Interview[]
   touches           Touch[]
   companyId         Int?
-  companies          Company?        @relation(fields: [companyId], references: [id])
+  companies         Company?        @relation(fields: [companyId], references: [id])
 }
 
 model Company {
@@ -70,15 +70,16 @@ model JobApplication {
 }
 
 model NextStep {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   action    String
   notes     String?
   type      String?
   userId    Int?
   contactId Int?
-  completed Boolean  @default(false)
-  contact   Contact? @relation(fields: [contactId], references: [id])
-  user      User?    @relation(fields: [userId], references: [id])
+  completed Boolean   @default(false)
+  contact   Contact?  @relation(fields: [contactId], references: [id])
+  dueDate   DateTime? @default(now())
+  user      User?     @relation(fields: [userId], references: [id])
 }
 
 model Interview {

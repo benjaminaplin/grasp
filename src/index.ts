@@ -10,27 +10,17 @@ import { DefaultArgs } from '@prisma/client/runtime/library';
 import createNextStepRouter from './routers/next-step-router'
 import createInterviewRouter from './routers/interview-router'
 import createTouchRouter from './routers/touch-router'
+
 export type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
 
-const checkRequiredPermissions = (requiredPermissions: any) => {
-  return (req: any, res: any, next: any) => {
-    const permissionCheck = claimCheck((payload: any) => {
-      const permissions = payload.permissions || [];
+const { auth, requiredScopes } = require('express-oauth2-jwt-bearer');
 
-      const hasPermissions = requiredPermissions.every((requiredPermission: any) =>
-        permissions.includes(requiredPermission)
-      );
-
-      if (!hasPermissions) {
-        throw new InsufficientScopeError();
-      }
-
-      return hasPermissions;
-    });
-
-    permissionCheck(req, res, next);
-  };
-};
+// Authorization middleware. When used, the Access Token must
+// exist and be verified against the Auth0 JSON Web Key Set.
+const checkJwt = auth({
+  audience: 'https://dev-q0lu0oq6.us.auth0.com/api/v2/',
+  issuerBaseURL: `https://dev-q0lu0oq6.us.auth0.com/`,
+});
 
 const prismaClient = new PrismaClient({
   log: [
@@ -73,18 +63,18 @@ app.use(bodyParser.json())
 app.use(express.json())
 const port = 3000;
 
-app.use('/api/users', createUserRouter(prismaClient))
-app.use('/api/contacts', createContactRouter(prismaClient),  checkRequiredPermissions([AdminMessagesPermissions.Read]),
+app.use('/api/users', checkJwt, createUserRouter(prismaClient))
+app.use('/api/contacts', checkJwt, createContactRouter(prismaClient),
 (req, res) => {
   const message = getAdminMessage();
 
   res.status(200).json(message);
 })
-app.use('/api/companies', createCompanyRouter(prismaClient))
-app.use('/api/job-applications', createJobApplicationRouter(prismaClient))
-app.use('/api/next-steps', createNextStepRouter(prismaClient))
-app.use('/api/interviews', createInterviewRouter(prismaClient))
-app.use('/api/touches', createTouchRouter(prismaClient))
+app.use('/api/companies', checkJwt, createCompanyRouter(prismaClient))
+app.use('/api/job-applications', checkJwt, createJobApplicationRouter(prismaClient))
+app.use('/api/next-steps', checkJwt, createNextStepRouter(prismaClient))
+app.use('/api/interviews', checkJwt, createInterviewRouter(prismaClient))
+app.use('/api/touches', checkJwt, createTouchRouter(prismaClient))
 
 
 

@@ -9,11 +9,9 @@ export const contactList = (prisma: PrismaClientType) => asyncHandler( async (re
   try {
      contacts = await prisma.contact.findMany(
       {
-        where: {userId: 3},
+        where: {userId: 2},
         include: {
           nextSteps: true,
-          companies: true,
-          jobApplications: true,
           touches: true,
         },
       }

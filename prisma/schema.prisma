@@ -44,6 +44,7 @@ model Company {
   id              Int              @id @default(autoincrement())
   name            String
   notes           String?
+  type            String?
   userid          Int?
   jobApplications JobApplication[]
   users           User[]           @relation("CompanyToUser")

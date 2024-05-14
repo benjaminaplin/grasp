@@ -9,7 +9,7 @@ export const touchList = (prisma: PrismaClientType) => asyncHandler( async (req:
   let touchs
   try {
      touchs = await prisma.touch.findMany({
-      where: {userId: 3},
+      where: {userId: 2},
       include: {
         jobApplication: true,
         contact: true

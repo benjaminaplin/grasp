@@ -1,9 +1,9 @@
-const {
+import {
   auth,
   claimCheck,
   InsufficientScopeError,
-} = require("express-oauth2-jwt-bearer");
-const dotenv = require("dotenv");
+} from "express-oauth2-jwt-bearer";
+import dotenv from "dotenv"
 
 dotenv.config();
 

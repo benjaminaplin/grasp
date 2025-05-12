@@ -31,7 +31,7 @@ export const updateNextStep = (prisma: PrismaClientType) => asyncHandler(async (
   let newNextStep
 
   const nextStep = await prisma.nextStep.findUnique({where: {id: JSON.parse(req.params.id)}})
-  if(!nextStep.completed && (completed === true)){
+  if(!nextStep?.completed && (completed === true)){
     let newTouch: Partial<Touch> = {
       notes: action,
       type,

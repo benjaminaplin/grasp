@@ -32,6 +32,8 @@ export const getTouch = (prisma: PrismaClientType) => asyncHandler( async (req: 
   res.send(touch)
 });
 
+
+
 // Display detail page for a specific Author.
 export const updateTouch = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let updateTouch
@@ -50,7 +52,6 @@ export const updateTouch = (prisma: PrismaClientType) => asyncHandler( async (re
 
 export const createTouch = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
 const { round, type, status: touchStatus, userId, notes, contactId, jobApplicationId, scheduledDate} = req.body
-console.log('**************************', req.body, '**************************')  
 
 let result
   try {

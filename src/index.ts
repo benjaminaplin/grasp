@@ -10,10 +10,11 @@ import { DefaultArgs } from '@prisma/client/runtime/library';
 import createNextStepRouter from './routers/next-step-router'
 import createInterviewRouter from './routers/interview-router'
 import createTouchRouter from './routers/touch-router'
-
+import helmet from 'helmet'
+import RateLimit, { rateLimit } from 'express-rate-limit'
 export type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
 
-const { auth, requiredScopes } = require('express-oauth2-jwt-bearer');
+import { auth, requiredScopes } from 'express-oauth2-jwt-bearer';
 
 // Authorization middleware. When used, the Access Token must
 // exist and be verified against the Auth0 JSON Web Key Set.
@@ -58,6 +59,12 @@ const getAdminMessage = () => {
 
 const app = express()
 app.use(cors())
+app.use(helmet())
+// const limiter = new RateLimit({
+//   windowMs: 15*60*1000, // 15 minutes
+//   max: 100,
+// })
+// app.use(limiter())
 app.use(bodyParser.json())
 
 app.use(express.json())
@@ -76,9 +83,11 @@ app.use('/api/next-steps', checkJwt, createNextStepRouter(prismaClient))
 app.use('/api/interviews', checkJwt, createInterviewRouter(prismaClient))
 app.use('/api/touches', checkJwt, createTouchRouter(prismaClient))
 
+const PORT = process.env.PORT || 3000;
 
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
-
+if (!(globalThis as any).serverStarted) {
+  app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}`);
+  });
+  (globalThis as any).serverStarted = true;
+}

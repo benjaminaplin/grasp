@@ -49,6 +49,7 @@ export const getUserCompanies = (prisma: PrismaClientType) => asyncHandler( asyn
         } 
       }
     })
+    
   } catch (error) {
     companies = error
   }

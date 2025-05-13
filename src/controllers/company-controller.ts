@@ -5,13 +5,39 @@ import asyncHandler from "express-async-handler"
 type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
 // Display list of all Companys.
 export const companyList = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
-  let companies
-  try {
-     companies = await prisma.company.findMany({ where: { userid: 2 }})
-  } catch (error) {
-    companies = error
-  }
-  res.send(companies)
+  const page = Math.max(parseInt(req.query.page as string) || 1, 1); // default to page 1
+    const limit = Math.min(parseInt(req.query.limit as string) || 10, 100); // default 10, max 100
+    const offset = (page - 1) * limit;
+
+    try {
+      const companies = await prisma.$queryRaw`
+          SELECT 
+            company.id,
+            company.type,
+            company.notes,
+            company.created_at,
+            company.name
+        FROM "Company" company
+        WHERE company."userid" = 2
+        ORDER BY company.name ASC
+           LIMIT ${limit} OFFSET ${offset};
+      `;
+      
+      const [{ count }] = await prisma.$queryRaw<{ count: bigint }[]>`
+      SELECT COUNT(*)::bigint FROM "Company" WHERE "userid" = ${2}
+      `;
+      const response = {
+        page,
+        limit,
+        total: Number(count),
+        data: companies,
+      }
+      console.log("🚀 ~ response:", response)
+      res.send(response);
+    } catch (error) {
+      console.error("Error in jobApplicationList:", error);
+      res.status(500).send({ error: "Internal Server Error" });
+    }
 });
 
 export const getCompany = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {

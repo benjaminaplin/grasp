@@ -13,7 +13,7 @@ export const jobApplicationList = (prisma: PrismaClient) =>
 
     try {
       const jobApplications = await prisma.$queryRaw`
-         SELECT 
+        SELECT 
             ja.id,
             ja.type,
             ja.role,
@@ -23,14 +23,20 @@ export const jobApplicationList = (prisma: PrismaClient) =>
             ja.description,
             ja.link,
             ja.created_at,
-            company.name as "company",
-            company.id as "companyId"
+            company.name AS "company",
+            company.id AS "companyId",
+            COUNT(interview.id)::int AS "interviewCount"
         FROM "JobApplication" ja
-        join "Company" company on ja."companyId" = company.id
-          WHERE "userId" = 2
-          ORDER BY ja.status DESC
+        JOIN "Company" company ON ja."companyId" = company.id
+        LEFT JOIN "Interview" interview ON ja.id = interview."jobApplicationId"
+        WHERE ja."userId" = 2
+        GROUP BY 
+            ja.id,
+            company.id
+        ORDER BY ja.status DESC
            LIMIT ${limit} OFFSET ${offset}
       `;
+      console.log("🚀 ~ asyncHandler ~ jobApplications:", jobApplications)
 
       const [{ count }] = await prisma.$queryRaw<{ count: bigint }[]>`
         SELECT COUNT(*)::bigint FROM "JobApplication" WHERE "userId" = ${2}
@@ -75,7 +81,7 @@ export const updateJobApplication = (prisma: PrismaClientType) => asyncHandler( 
 })
 
 export const createJobApplication = (prisma: PrismaClientType) => asyncHandler(async (req, res) => {
-  const { userId, role, type, notes, companyId, companyName } = req.body;
+  const { userId, role, type, notes, companyId, companyName, status } = req.body;
 
   try {
     let resolvedCompanyId = companyId;
@@ -107,6 +113,7 @@ export const createJobApplication = (prisma: PrismaClientType) => asyncHandler(a
     }
 
     const jobApplicationPayload = {
+      status,
       userId: JSON.parse(userId),
       type,
       role,
@@ -122,6 +129,7 @@ export const createJobApplication = (prisma: PrismaClientType) => asyncHandler(a
     res.status(500).json({ error: "Something went wrong" });
   }
 });
+
 export const deleteJobApplication = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
   let result
   try {

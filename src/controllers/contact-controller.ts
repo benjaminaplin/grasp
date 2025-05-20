@@ -5,21 +5,73 @@ import asyncHandler from "express-async-handler"
 type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
 // Display list of all Contacts.
 export const contactList = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
-  let contacts
-  try {
-     contacts = await prisma.contact.findMany(
-      {
-        where: {userId: 2},
-        include: {
-          nextSteps: true,
-          touches: true,
-        },
+    const page = Math.max(parseInt(req.query.page as string) || 1, 1); // default to page 1
+    const limit = Math.min(parseInt(req.query.limit as string) || 10, 100); // default 10, max 100
+    const offset = (page - 1) * limit;
+ 
+    try {
+      const contacts = await prisma.$queryRawUnsafe(`
+      SELECT 
+          contact.id,
+          contact.title,
+          contact.closeness,
+          contact."jobApplicationsId",
+          contact."companyId",
+          contact.type,
+          contact.notes,
+          contact.created_at,
+          contact."firstName",
+          contact."lastName",
+          company.name as "companyName",
+          COALESCE(
+            json_agg(
+              jsonb_build_object(
+                'id', ns.id,
+                'action', ns.action,
+                'notes', ns."notes",
+                'type', ns."type",
+                'isCompleted', ns."completed"
+              )
+            ) FILTER (WHERE ns.id IS NOT NULL),
+            '[]'
+          ) AS "nextSteps",
+          COALESCE(
+            json_agg(
+              jsonb_build_object(
+                'id', touch.id,
+                'notes', touch."notes",
+                'type', touch."type"
+              )
+            ) FILTER (WHERE ns.id IS NOT NULL),
+            '[]'
+          ) AS "touches"
+        FROM "Contact" contact
+        LEFT JOIN "NextStep" ns ON ns."contactId" = contact.id 
+        LEFT JOIN "Touch" touch on touch."userId" = contact.id
+        LEFT JOIN "Company" company on company.id = contact."companyId"
+        WHERE contact."userId" = 2
+        GROUP BY contact.id, company.name
+        LIMIT ${limit} OFFSET ${offset};
+      `);
+      
+      const [{ count }] = await prisma.$queryRaw<{ count: bigint }[]>`
+      SELECT COUNT(*)::bigint FROM "Contact" WHERE "userId" = ${2}
+      `;
+      const response = {
+        page,
+        limit,
+        total: Number(count),
+        data: contacts,
       }
-     )
-  } catch (error) {
-    contacts = error
-  }
-  res.send(contacts)
+      console.log("🚀 ~ response.page:", response.page)
+      console.log("🚀 ~ response.limit:", response.limit)
+      console.log("🚀 ~ response.total:", response.total)
+      console.log("🚀 ~ response.contacts:", response.data[0])
+      res.send(response);
+    } catch (error) {
+      console.error("Error in jobApplicationList:", error);
+      res.status(500).send({ error: "Internal Server Error" });
+    }
 });
 
 export const getContact = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {

@@ -6,20 +6,35 @@ import { jobApplicationList } from "./job-application-controller";
 type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
 // Display list of all Touchs.
 export const touchList = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
-  let touchs
+    const page = Math.max(parseInt(req.query.page as string) || 1, 1); // default to page 1
+    const limit = Math.min(parseInt(req.query.limit as string) || 10, 100); // default 10, max 100
+    const offset = (page - 1) * limit;
+  
+  let touches
+  let count
   try {
-     touchs = await prisma.touch.findMany({
+       count = await prisma.touch.count({ where: { userId: 2 } });
+     touches = await prisma.touch.findMany({
+      skip: offset,
+      take: limit,
       where: {userId: 2},
       include: {
         jobApplication: true,
-        contact: true
+        contact: true,
       }
      })
  
   } catch (error) {
-    touchs = error
+    touches = error
   }
-  res.send(touchs)
+
+  const response = {
+    page,
+    limit,
+    total: Number(count),
+    data: touches,
+  }
+ res.send(response);
 });
 
 export const getTouch = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {

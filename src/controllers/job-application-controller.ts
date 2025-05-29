@@ -10,48 +10,36 @@ export const jobApplicationList = (prisma: PrismaClient) =>
     const page = Math.max(parseInt(req.query.page as string) || 1, 1); // default to page 1
     const limit = Math.min(parseInt(req.query.limit as string) || 10, 100); // default 10, max 100
     const offset = (page - 1) * limit;
+  let count
+  let jobApplications
+   try {
+    count = await prisma.jobApplication.count({ where: { userId: 2 } });
+    jobApplications = await prisma.jobApplication.findMany({
+      skip: offset,
+      take: limit,
+      where: { userId: 2 },
+      orderBy: { status: 'desc' }, // Sort by status in ascending order
+      include: {
+        company: true,
+        contacts: true,
+        Interview: true,
+        Touch: true,
+      }
+    })
+ 
+  } catch (error) {
+    jobApplications = error
+    console.error("Error in jobApplicationList:", error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
 
-    try {
-      const jobApplications = await prisma.$queryRaw`
-        SELECT 
-            ja.id,
-            ja.type,
-            ja.role,
-            ja.notes,
-            ja."dateApplied",
-            ja.status,
-            ja.description,
-            ja.link,
-            ja.created_at,
-            company.name AS "company",
-            company.id AS "companyId",
-            COUNT(interview.id)::int AS "interviewCount"
-        FROM "JobApplication" ja
-        JOIN "Company" company ON ja."companyId" = company.id
-        LEFT JOIN "Interview" interview ON ja.id = interview."jobApplicationId"
-        WHERE ja."userId" = 2
-        GROUP BY 
-            ja.id,
-            company.id
-        ORDER BY ja.status DESC
-           LIMIT ${limit} OFFSET ${offset}
-      `;
-      console.log("🚀 ~ asyncHandler ~ jobApplications:", jobApplications)
-
-      const [{ count }] = await prisma.$queryRaw<{ count: bigint }[]>`
-        SELECT COUNT(*)::bigint FROM "JobApplication" WHERE "userId" = ${2}
-      `;
-
-      res.send({
-        page,
-        limit,
-        total: Number(count),
-        data: jobApplications,
-      });
-    } catch (error) {
-      console.error("Error in jobApplicationList:", error);
-      res.status(500).send({ error: "Internal Server Error" });
+    const response = {
+      page,
+      limit,
+      total: Number(count),
+      data: jobApplications,
     }
+  res.send(response);
   });
 
 export const getJobApplication = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
@@ -61,6 +49,9 @@ export const getJobApplication = (prisma: PrismaClientType) => asyncHandler( asy
       where: {id: JSON.parse(req.params.id)},
       include: {
         company: true,
+        contacts: true,
+        Interview: true,
+        Touch: true,
       }
     })
   } catch (error) {
@@ -144,7 +135,7 @@ export const deleteJobApplication = (prisma: PrismaClientType) => asyncHandler( 
       },
     })
   } catch (error) {
-    console.log('eror', error)
+    console.log('error', error)
     result = error
   }
   res.json(result)

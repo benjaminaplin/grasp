@@ -4,7 +4,7 @@ import asyncHandler from "express-async-handler"
 
 type PrismaClientType = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
 // Display list of all Contacts.
-export const contactList = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
+export const getContacts = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
     const page = Math.max(parseInt(req.query.page as string) || 1, 1); // default to page 1
     const limit = Math.min(parseInt(req.query.limit as string) || 10, 100); // default 10, max 100
     const offset = (page - 1) * limit;
@@ -63,16 +63,32 @@ export const contactList = (prisma: PrismaClientType) => asyncHandler( async (re
         total: Number(count),
         data: contacts,
       }
-      console.log("🚀 ~ response.page:", response.page)
-      console.log("🚀 ~ response.limit:", response.limit)
-      console.log("🚀 ~ response.total:", response.total)
-      console.log("🚀 ~ response.contacts:", response.data[0])
       res.send(response);
     } catch (error) {
       console.error("Error in jobApplicationList:", error);
       res.status(500).send({ error: "Internal Server Error" });
     }
 });
+
+export const contactList = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
+    const page = Math.max(parseInt(req.query.page as string) || 1, 1); // default to page 1
+    const limit = Math.min(parseInt(req.query.limit as string) || 10, 100); // default 10, max 100
+    const offset = (page - 1) * limit;
+ 
+    try {
+      const contacts = await prisma.contact.findMany({
+        where: {
+          userId: 2
+        }
+      });
+      
+      res.send( contacts);
+    } catch (error) {
+      console.error("Error in jobApplicationList:", error);
+      res.status(500).send({ error: "Internal Server Error" });
+    }
+});
+
 
 export const getContact = (prisma: PrismaClientType) => asyncHandler( async (req: any, res: any) => {
   let contact
@@ -115,7 +131,6 @@ const {closeness, firstName, lastName, userId, title, type, notes } = req.body
       },
     })
   } catch (error) {
-    console.log('err', error)
     result = error
   }
   res.json(result)
@@ -130,7 +145,6 @@ export const deleteContact = (prisma: PrismaClientType) => asyncHandler( async (
       },
     })
   } catch (error) {
-    console.log('eror', error)
     result = error
   }
   res.json(result)

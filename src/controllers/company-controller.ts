@@ -32,7 +32,6 @@ export const companyList = (prisma: PrismaClientType) => asyncHandler( async (re
         total: Number(count),
         data: companies,
       }
-      console.log("🚀 ~ response:", response)
       res.send(response);
     } catch (error) {
       console.error("Error in jobApplicationList:", error);
@@ -94,7 +93,6 @@ export const createCompany = (prisma: PrismaClientType) => asyncHandler( async (
         id: userId,
       },
     })
-    console.log('user', user)
   } catch (error) {
     user = error
     res.json(user)
@@ -110,7 +108,6 @@ export const createCompany = (prisma: PrismaClientType) => asyncHandler( async (
       },
     })
   } catch (error) {
-    console.log('err', error)
     result = error
   }
   res.json(result)
@@ -125,7 +122,6 @@ export const deleteCompany = (prisma: PrismaClientType) => asyncHandler( async (
       },
     })
   } catch (error) {
-    console.log('eror', error)
     result = error
   }
   res.json(result)

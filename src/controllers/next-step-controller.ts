@@ -64,7 +64,7 @@ export const updateNextStep = (prisma: PrismaClientType) => asyncHandler(async (
 
 export const createNextStep = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
 const { action, userId, type, notes, contactId, dueDate } = req.body
-  console.log({ action, userId, type, notes, contactId, dueDate })
+  console.log('creating next step: ',{ action, userId, type, notes, contactId, dueDate })
   let result
   try {
     result = await prisma.nextStep.create({

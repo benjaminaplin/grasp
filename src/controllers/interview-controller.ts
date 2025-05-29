@@ -9,10 +9,18 @@ export const interviewList = (prisma: PrismaClientType) => asyncHandler( async (
   let interviews
   try {
      interviews = await prisma.interview.findMany({
+        orderBy: {
+        date: 'desc', // or 'asc' for ascending
+      },
       where: {userId: 2},
       include: {
-        jobApplication: true,
-        contact: true
+        jobApplication: {
+          include: {
+            company: true, // This will include the company object, including its name
+          },
+        },
+        contact: true,
+        
       }
      })
  
@@ -42,6 +50,7 @@ export const updateInterview = (prisma: PrismaClientType) => asyncHandler( async
         },
         data: req.body
     })
+    console.log('updateInterview', updateInterview)
   } catch (error) {
     updateInterview = error
   }
@@ -50,22 +59,22 @@ export const updateInterview = (prisma: PrismaClientType) => asyncHandler( async
 
 export const createInterview = (prisma: PrismaClientType) => asyncHandler( async (req, res) => {
 const { round, type, status: interviewStatus, userId, notes, contactId, jobApplicationId, date} = req.body
+  console.log("🚀 ~ createInterview ~ req.body:", req.body)
   let result
   try {
-    result = await prisma.interview.create({
-      data: {
-        round: JSON.parse(round),
-        notes,
-        type,
-        status: interviewStatus,
-        jobApplicationId: JSON.parse(jobApplicationId),
-        userId: JSON.parse(userId),
-        contactId: JSON.parse(contactId),
-        date: new Date(date).toISOString()
-      },
-    })
+   result = await prisma.interview.create({
+    data: {
+    round: JSON.parse(round),
+    notes,
+    type,
+    status: interviewStatus,
+    jobApplicationId: jobApplicationId ? JSON.parse(jobApplicationId) : null,
+    userId: userId ? JSON.parse(userId) : null,
+    contactId: contactId ? JSON.parse(contactId) : null,
+    date: date ? new Date(date).toISOString() : undefined
+  }
+  });
   } catch (error) {
-    console.log('err', error)
     result = error
   }
   res.json(result)
@@ -80,7 +89,6 @@ export const deleteInterview = (prisma: PrismaClientType) => asyncHandler( async
       },
     })
   } catch (error) {
-    console.log('eror', error)
     result = error
   }
   res.json(result)
